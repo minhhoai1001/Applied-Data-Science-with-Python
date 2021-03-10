@@ -1,0 +1,112 @@
+.jumbotron {
+      background: url("https://s3.amazonaws.com/dataskeptic.com/imgs/ds_background_2020.png") center center / cover no-repeat;
+  color: white;
+  padding-bottom: 40px;
+}
+.jumbotron .btn-primary {
+    background: #845ac7;
+    border-color: #845ac7;
+}
+.jumbotron .btn-primary:hover {
+      background: #7646c1;
+}
+.jumbotron p {
+    color: #d9ccee;
+    max-width: 75%;
+    margin: 1em auto 2em;
+}
+.navbar + .jumbotron {
+    margin-top: -20px;
+}
+.jumbotron .lang-logo {
+    display: block;
+    background: #B01302;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 100px;
+    height: 100px;
+    margin: auto;
+    border: 2px solid white;
+}
+.jumbotron .lang-logo img {
+      max-width: 100%;
+}
+
+.home_logo {
+      max-width: 100%;
+}
+
+.recent_date {
+  font-size: 8pt;
+}
+
+h1 { font-size: 32pt; text-align: center; }
+h2 { font-size: 16pt; }
+
+
+
+.distro {
+  padding: 5px;
+}
+
+
+
+.guest-image { 
+  max-width: 70px;
+  max-height: 70px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+img {
+  display: inline;
+  margin: 0 auto;
+  height: 100%;
+  width: auto;
+}
+
+.guest-name {
+  font-weight: bold;
+  font-size: 8pt;
+  font-variant-caps: 1;
+}
+
+.guest-area {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+
+
+
+
+
+
+.album_art {
+  max-width: 100%;
+  height: auto;
+  margin: 5px;
+}
+.podcast_summary {
+  display: grid;
+  grid-template-columns: 1fr 4fr; /* fraction*/
+ }
+
+
+
+
+
+
+
+
+img[src*='#left'] {
+    float: left;
+}
+img[src*='#right'] {
+    float: right;
+}
+img[src*='#center'] {
+    display: block;
+    margin: auto;
+}

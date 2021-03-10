@@ -1,0 +1,130 @@
+(function () {
+  Element.prototype.setAttributes = function setAttributes(obj) {
+    obj = obj || {};
+    for (let attr in obj) {
+      if (attr === 'style') {
+        for (let key in obj.style) this.style[key] = obj.style[key];
+      } else {
+        if ((['innerHTML']).indexOf(attr) >= 0 || obj[attr].constructor.name === 'Function') {
+          this[attr] = obj[attr];
+        } else {
+          this.setAttribute(attr, obj[attr]);
+        }
+      }
+    }
+    return this;
+  };
+
+  function uuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+  // Setup global Bot array to hold more than 1 Bot, if loaded
+  window.ChatBot = window.ChatBot || [];
+  const Bot = {
+    // Bot settings
+    id: window.ChatBot.length,                                                                                // Bot instance ID
+    embed_url: 'https://fc9t2x13u6.execute-api.us-east-2.amazonaws.com/latest',                                                               // (Production)
+    generated_url: '',                                                                                        // Placeholder for the generated URL that we're connecting to
+    bot_id: document.currentScript.getAttribute('bot_id') || undefined,                         // The Bot's GUID
+    dialog_id: document.currentScript.getAttribute('dialog_id') || undefined,                   // A specific dialog_id to start the Bot on (Not implemented yet)
+    username: document.currentScript.getAttribute('username') || '',                            // Username of the connecting user
+
+    // Interface elements to inject onto the current page
+    wrapper: document.createElement('div'),
+    loader: document.createElement('i'),
+    iframe: document.createElement('iframe'),
+    close: document.createElement('span'),
+    openIcon: document.createElement('img'),
+    loading: 0,
+    is_ready: false,
+
+    // Setup and build the UI and functionality
+    setup: function () {
+      if (this.is_ready) return;
+      this.is_ready = true;
+      if (!this.bot_id) throw new Error('bot_id is undefined.');
+      const username = this.username || uuid();
+      this.generated_url = ([this.embed_url, 'chat', this.bot_id, username]).join('/');
+
+      // Wrapper
+      this.wrapper.setAttributes({ class: 'chatbot-wrapper closed loading' });
+      // Loader
+      this.loader.setAttributes({
+        class: 'chatbot-loader fa fa-spinner fa-pulse fa-3x fa-fw',
+      });
+      this.wrapper.appendChild(this.loader);
+      // Open Icon
+      this.openIcon.setAttributes({
+        class: 'open-icon',
+        id: 'ChatBot-icon_' + this.id,
+        src: 'https://s3.amazonaws.com/dataskeptic.com/ds_sm.jpg',
+        onclick: (function (e) {
+          this.wrapper.classList.toggle('closed');
+        }).bind(this),
+        onload: (function () {
+          this.openIcon.classList.toggle('loaded')
+        }).bind(this),
+      });
+      // iFrame
+      this.iframe.setAttributes({
+        id: 'ChatBot_' + this.id,
+        class: 'chatbot-iframe',
+        src: encodeURI(this.generated_url),
+        scrolling: 'no',
+        onload: this.start.bind(this)
+      });
+      this.wrapper.appendChild(this.iframe);
+      this.loading++;
+      // Close
+      this.close.setAttributes({
+        class: 'chatbot-close fa fa-times',
+        onclick: (function (e) {
+          this.wrapper.classList.toggle('closed');
+        }).bind(this),
+      });
+      this.wrapper.appendChild(this.close);
+      // Add all elements to the page
+      document.body.appendChild(this.wrapper);
+      document.body.appendChild(this.openIcon);
+    },
+    start: function () {
+      this.loading -= 1;
+      if (this.loading !== 0) return;
+      // Done loading, disable the loader and show the iFrame
+      this.wrapper.classList.remove('loading');
+      // Keep an eye on our <script> element
+      // If it is deleted, then delete this instance of ChatBot
+      // const observer = new MutationObserver(function (mutations) {
+      //   if (!document.body.contains(document.currentScript)) {
+      //     Bot.remove();
+      //     observer.disconnect();
+      //   }
+      // });
+      // observer.observe(document.body, {childList: true});
+    },
+    remove: function () {
+      document.body.removeChild(this.wrapper);
+      window.ChatBot.splice(Bot.id, 1);
+    }
+  };
+  
+  window.ChatBot.push(Bot);
+  
+  const fontAwesome = document.createElement('link');
+  fontAwesome.setAttributes({
+    href: 'https://use.fontawesome.com/releases/v5.4.1/css/all.css',
+    rel: 'stylesheet',
+  });
+  document.head.appendChild(fontAwesome);
+  const chatStyles = document.createElement('link');
+  chatStyles.setAttributes({
+    href: Bot.embed_url + '/chatbot/skeptic-chat/styles',
+    rel: 'stylesheet',
+    onload: Bot.setup.bind(Bot),
+  });
+  document.head.appendChild(chatStyles);
+})();
